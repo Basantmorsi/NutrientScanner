@@ -1,3 +1,4 @@
+import re
 """
 Stage 1: Parsing Ingredients
 ============================
@@ -29,6 +30,16 @@ def parse_ingredients(raw_text: str) -> list[str]:
     4. Remove any empty strings from the result
     5. Remove any parenthetical content like "(for color)" from ingredients
 
+    import re
+
+    splitted_array = raw_text.split(",")
+    formatted_array = []
+    for i in range(len(splitted_array)):
+        splitted_array[i] = (splitted_array[i].strip()).lower()
+        if splitted_array[i] :
+            splitted_array[i]=re.sub(r"\(.*?\)","",splitted_array[i])
+            formatted_array.append(splitted_array[i])
+
     Args:
         raw_text: A string containing ingredients, typically comma-separated
                   Example: "Water, Sugar, Salt, Natural Flavors (soy)"
@@ -52,9 +63,17 @@ def parse_ingredients(raw_text: str) -> list[str]:
     """
     # ============================================================
     # TODO: YOUR CODE HERE
+    splitted_array = raw_text.split(",")
+    formatted_array = []
+    for i in range(len(splitted_array)):
+        splitted_array[i] = (splitted_array[i].strip()).lower()
+        if splitted_array[i]:
+            splitted_array[i] = re.sub(r"\(.*?\)", "", splitted_array[i])
+            formatted_array.append(splitted_array[i])
+    return formatted_array
     # ============================================================
     # Delete the line below and write your implementation:
-    return ["__NOT_IMPLEMENTED__"]
+    #return ["__NOT_IMPLEMENTED__"]
     # ============================================================
 
 
