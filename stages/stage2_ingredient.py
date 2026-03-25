@@ -18,11 +18,17 @@ Learning Objectives:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Literal
 
 
 @dataclass
 class Ingredient:
+    name: str
+    category: Literal["healthy", "moderate", "harmful", "unknown"] = field(default= "unknown")
+    health_score: Literal[0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10] = field(default= 5)
+    description: str = field(default="No information available")
+    found_in_database: bool = field(default=False)
+
     """
     Represents a single ingredient with its health analysis.
 
@@ -70,7 +76,7 @@ class Ingredient:
     #
     # Delete the placeholder below and define your fields:
 
-    name: str = "__NOT_IMPLEMENTED__"
+    #name: str = "__NOT_IMPLEMENTED__"
 
     # Add the remaining fields here:
     # category: str = ...
@@ -82,6 +88,7 @@ class Ingredient:
 
 
 def create_unknown_ingredient(name: str) -> Ingredient:
+    return Ingredient(name=name)
     """
     Factory function to create an Ingredient that wasn't found in the database.
 
@@ -108,7 +115,7 @@ def create_unknown_ingredient(name: str) -> Ingredient:
     # This should be a single line once your Ingredient class is defined!
     #
     # Delete the line below and write your implementation:
-    return Ingredient()
+    #return Ingredient()
     # ============================================================
 
 
