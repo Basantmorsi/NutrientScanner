@@ -9,6 +9,7 @@ dependencies = [
     "google-genai>=1.0.0",
     "Pillow>=10.0.0",
     "watchdog>=6.0.0",
+    "stages>=1.0.dev0",
 ]
 
 [dependency-groups]

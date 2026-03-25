@@ -55,7 +55,9 @@ def check_stage_implementation(stage_number: int) -> bool:
             return is_implemented()
         else:
             return False
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.exception(e)
         return False
 
 

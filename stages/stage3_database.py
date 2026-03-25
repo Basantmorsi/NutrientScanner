@@ -78,9 +78,9 @@ class IngredientDatabase:
         # - Remember to close the file (or use a 'with' statement)
         #
         # Delete the lines below and write your implementation:
-        file_path = "data/ingredients_db.json"
+        #file_path = "data/ingredients_db.json"
         try:
-            with open(file_path, 'r') as data:
+            with open(json_path, 'r') as data:
                 file_data = json.load(data)
                 self._ingredients = file_data["ingredients"]
                 self._categories = file_data["categories"]

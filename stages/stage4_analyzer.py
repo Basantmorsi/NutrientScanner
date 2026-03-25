@@ -18,8 +18,12 @@ Learning Objectives:
 """
 
 from pathlib import Path
-from stages.stage2_ingredient import Ingredient, create_unknown_ingredient
-from stages.stage3_database import IngredientDatabase
+if __name__ == "__main__":
+    from stage2_ingredient import Ingredient, create_unknown_ingredient
+    from stage3_database import IngredientDatabase
+else:
+    from stages.stage2_ingredient import Ingredient, create_unknown_ingredient
+    from stages.stage3_database import IngredientDatabase
 
 
 def analyze_single_ingredient(name: str, database: IngredientDatabase) -> Ingredient:
@@ -61,7 +65,14 @@ def analyze_single_ingredient(name: str, database: IngredientDatabase) -> Ingred
     # - Set found_in_database=True when found, False otherwise
     #
     # Delete the line below and write your implementation:
-    return Ingredient(name="__NOT_IMPLEMENTED__")
+    result = database.lookup(name)
+    if result :
+        ingredient = Ingredient(name = name, category= result["category"], health_score=result["health_score"], description=result["description"], found_in_database=True)
+    else:
+        ingredient = create_unknown_ingredient(name)
+        ingredient.found_in_database = False
+    return  ingredient
+    #return Ingredient(name="__NOT_IMPLEMENTED__")
     # ============================================================
 
 
@@ -105,7 +116,11 @@ def analyze_ingredients(
     #   return results
     #
     # Delete the line below and write your implementation:
-    return []
+    #return []
+    results = []
+    for name in ingredient_names:
+        results.append(analyze_single_ingredient(name, database))
+    return results
     # ============================================================
 
 
@@ -139,7 +154,11 @@ def filter_by_category(
     # Use a list comprehension to filter ingredients where ing.category == category
     #
     # Delete the line below and write your implementation:
-    return []
+    results = []
+    for ingredient in ingredients:
+        if ingredient.category == category:
+            results.append(ingredient)
+    return results
     # ============================================================
 
 
@@ -180,7 +199,11 @@ def sort_by_health_score(
     # - 'ascending=True' means reverse=False
     #
     # Delete the line below and write your implementation:
-    return ingredients
+    if ascending:
+        sorted_list = sorted(ingredients, key=lambda x: x.health_score, reverse=False)
+    else:
+        sorted_list = sorted(ingredients, key=lambda x: x.health_score, reverse=True)
+    return sorted_list
     # ============================================================
 
 
@@ -191,7 +214,8 @@ def is_implemented() -> bool:
         db = IngredientDatabase(str(db_path))
         result = analyze_single_ingredient("water", db)
         return result.name != "__NOT_IMPLEMENTED__"
-    except Exception:
+    except Exception as e:
+        print(e)
         return False
 
 
