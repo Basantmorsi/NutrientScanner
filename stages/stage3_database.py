@@ -78,9 +78,19 @@ class IngredientDatabase:
         # - Remember to close the file (or use a 'with' statement)
         #
         # Delete the lines below and write your implementation:
-        self._ingredients: dict = {}
-        self._categories: dict = {}
-        self._not_implemented = True
+        file_path = "data/ingredients_db.json"
+        try:
+            with open(file_path, 'r') as data:
+                file_data = json.load(data)
+                self._ingredients = file_data["ingredients"]
+                self._categories = file_data["categories"]
+        except FileNotFoundError:
+            print("Error: The file was not found.")
+        except json.JSONDecodeError:
+            print("Error: The JSON is invalid.")
+        #self._ingredients: dict = {}
+        #self._categories: dict = {}
+        #self._not_implemented = True
         # ============================================================
 
     def lookup(self, ingredient_name: str) -> Optional[dict]:
@@ -106,7 +116,9 @@ class IngredientDatabase:
         # 3. Return the ingredient data dict, or None if not found
         #
         # Delete the line below and write your implementation:
-        return None
+        #return None
+        return self._ingredients.get(ingredient_name.lower())
+
         # ============================================================
 
     def get_all_ingredients(self) -> list[str]:
@@ -126,7 +138,8 @@ class IngredientDatabase:
         # Return a sorted list of all keys in self._ingredients
         #
         # Delete the line below and write your implementation:
-        return []
+        keys_list = list(self._ingredients.keys())
+        return sorted(keys_list)
         # ============================================================
 
     def get_category_info(self, category: str) -> Optional[dict]:
@@ -146,7 +159,7 @@ class IngredientDatabase:
         # Use .get() to safely retrieve from self._categories
         #
         # Delete the line below and write your implementation:
-        return None
+        return self._categories.get(category.lower())
         # ============================================================
 
     def __len__(self) -> int:
