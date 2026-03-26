@@ -18,7 +18,10 @@ Learning Objectives:
 - Format output strings
 """
 
-from stages.stage2_ingredient import Ingredient
+if __name__ == "__main__":
+    from stage2_ingredient import Ingredient
+else:
+    from stages.stage2_ingredient import Ingredient
 
 
 def calculate_overall_score(ingredients: list[Ingredient]) -> float:
@@ -59,7 +62,22 @@ def calculate_overall_score(ingredients: list[Ingredient]) -> float:
     # - Be careful not to divide by zero
     #
     # Delete the line below and write your implementation:
-    return -1.0  # Indicates not implemented
+    weighted_sum = 0
+    total_weights = 0
+    if len(ingredients)==0:
+        return 5.0
+    else:
+        for ingredient in ingredients:
+            if ingredient.found_in_database:
+                weighted_sum += ingredient.health_score * 1.0
+                total_weights += 1
+            else:
+                weighted_sum += ingredient.health_score * 0.5
+                total_weights += 0.5
+        if total_weights !=0:
+            return weighted_sum / total_weights
+        else:
+            return -1.0  # Indicates not implemented
     # ============================================================
 
 
@@ -91,7 +109,15 @@ def get_score_label(score: float) -> str:
     # Use if/elif/else to return the appropriate label based on score
     #
     # Delete the line below and write your implementation:
-    return "Not Implemented"
+    #return "Not Implemented"
+    if   8 <= score <= 10:
+        return "Excellent"
+    elif  6 <= score <= 7.9:
+        return "Good"
+    elif 4 <= score <=5.9:
+        return "Fair"
+    else:
+        return "Poor"
     # ============================================================
 
 
@@ -127,7 +153,12 @@ def count_by_category(ingredients: list[Ingredient]) -> dict[str, int]:
     # - Or use counts[category] = counts.get(category, 0) + 1
     #
     # Delete the line below and write your implementation:
-    return {}
+    counted_categories = {}
+    for ingredient in ingredients:
+        category = ingredient.category
+        counted_categories[category] = counted_categories.get(category, 0) +1
+
+    return counted_categories
     # ============================================================
 
 
@@ -168,7 +199,29 @@ def generate_recommendations(ingredients: list[Ingredient]) -> list[str]:
     # 6. If no recommendations, add a default message
     #
     # Delete the line below and write your implementation:
-    return ["Not implemented"]
+    recommendations = []
+    total_score = 0
+    counted_categories = count_by_category(ingredients)
+    harmful_count = counted_categories.get("harmful", 0)
+    if harmful_count >= 3:
+        recommendations.append("Consider choosing a healthier alternative")
+
+
+    for ingredient in ingredients:
+        if ingredient.category == "harmful":
+            recommendations.append(f"Watch out for: {ingredient.name}")
+        elif ingredient.category == "unknown":
+            recommendations.append(f"Unknown ingredients detected: {ingredient.name}")
+
+    total_score = calculate_overall_score(ingredients)
+    if total_score >= 8:
+        recommendations.append("Great choice! This product has healthy ingredients")
+
+    if len(recommendations) == 0:
+        recommendations.append("Keep going and add ingredients")
+
+    return recommendations
+    #return ["Not implemented"]
     # ============================================================
 
 
@@ -206,7 +259,21 @@ def format_analysis_summary(ingredients: list[Ingredient]) -> str:
     # - Use count_by_category() for the breakdown
     #
     # Delete the line below and write your implementation:
-    return "Not implemented"
+    total_score = calculate_overall_score(ingredients)
+    label = get_score_label(total_score)
+    counted_categories = count_by_category(ingredients)
+    output_text = (f'''
+        === Ingredient Analysis Summary ===
+        Total ingredients: {len(ingredients)}
+        Overall health score: {total_score} ({label})
+                         
+        Breakdown:
+                    \n'''
+                   )
+    for category in counted_categories:
+        output_text += f'''         -{category}: {counted_categories.get(category,0)} \n'''
+
+    return output_text
     # ============================================================
 
 
