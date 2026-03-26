@@ -19,7 +19,12 @@ Learning Objectives:
 """
 
 import pandas as pd
-from stages.stage2_ingredient import Ingredient
+from tenacity import retry_if_exception_message
+
+if __name__ == "__main__":
+    from stage2_ingredient import Ingredient
+else:
+    from stages.stage2_ingredient import Ingredient
 
 
 def ingredients_to_dataframe(ingredients: list[Ingredient]) -> pd.DataFrame:
@@ -58,7 +63,10 @@ def ingredients_to_dataframe(ingredients: list[Ingredient]) -> pd.DataFrame:
     # - Or use dataclasses.asdict() if you want to be fancy
     #
     # Delete the line below and write your implementation:
-    return pd.DataFrame({"_not_implemented": [True]})
+    data = [{"name": ing.name, "category": ing.category, "health_score": ing.health_score, "description": ing.description} for ing in ingredients]
+    data_frame = pd.DataFrame(data)
+    return data_frame
+    #return pd.DataFrame({"_not_implemented": [True]})
     # ============================================================
 
 
@@ -93,7 +101,8 @@ def filter_dataframe_by_category(
     # Use boolean indexing: df[df['column'] == value]
     #
     # Delete the line below and write your implementation:
-    return df
+    filtered_df = df[df['category'] == category]
+    return filtered_df
     # ============================================================
 
 
@@ -125,7 +134,8 @@ def sort_dataframe_by_score(
     # Use df.sort_values('column', ascending=...)
     #
     # Delete the line below and write your implementation:
-    return df
+    sorted_df = df.sort_values(by='health_score', ascending=ascending)
+    return sorted_df
     # ============================================================
 
 
@@ -168,11 +178,11 @@ def get_summary_statistics(df: pd.DataFrame) -> dict:
     #
     # Delete the lines below and write your implementation:
     return {
-        "total_count": 0,
-        "avg_score": 0.0,
-        "min_score": 0,
-        "max_score": 0,
-        "category_counts": {},
+        "total_count":  len(df),
+        "avg_score": df['health_score'].mean(),
+        "min_score": df['health_score'].min(),
+        "max_score": df['health_score'].max(),
+        "category_counts": df['category'].value_counts().to_dict(),
     }
     # ============================================================
 
