@@ -16,8 +16,9 @@ Learning Objectives:
 - Validate inputs and raise appropriate exceptions
 - Handle different types of errors gracefully
 """
-
+from logging import lastResort
 from typing import Optional
+import time
 
 
 class NutrientScannerError(Exception):
@@ -35,6 +36,7 @@ class InvalidIngredientError(NutrientScannerError):
     - Contains only numbers
     - Is longer than 100 characters
     """
+
 
     # ============================================================
     # TODO: YOUR CODE HERE
@@ -54,7 +56,10 @@ class InvalidIngredientError(NutrientScannerError):
     # - Store the ingredient_name as an instance attribute for later access
     #
     # Delete the 'pass' and write your implementation:
-    pass
+    def __init__(self, ingredient_name: str):
+        self.ingredient_name = ingredient_name
+        super().__init__(f"Invalid ingredient name: '{ingredient_name}'")
+
     # ============================================================
 
 
@@ -88,7 +93,13 @@ class APIError(NutrientScannerError):
     #     APIError: API Error: Rate limit exceeded (status code: 429)
     #
     # Delete the 'pass' and write your implementation:
-    pass
+    #pass
+    def __init__(self, message: str, status_code: Optional[int], original_error:Optional[Exception]):
+        self.message = message
+        self.status_code = status_code
+        self.original_error = original_error
+        super().__init__(f"API Error: {message}, status_code: {status_code}, original_error: {original_error}")
+
     # ============================================================
 
 
@@ -148,6 +159,10 @@ def validate_ingredient_name(name: str) -> str:
     # - any(c.isalpha() for c in str) checks if there's at least one letter
     #
     # Delete the line below and write your implementation:
+    if name and not name.isdigit() and not len(name) > 100 and any(c.isalpha() for c in name):
+        name = name.strip().lower()
+    else:
+        raise InvalidIngredientError(name)
     return name  # Not implemented - just returns input unchanged
     # ============================================================
 
@@ -190,7 +205,18 @@ def safe_parse_ingredients(raw_text: str) -> tuple[list[str], list[str]]:
     # - Use str(error) to get the error message
     #
     # Delete the lines below and write your implementation:
-    return ([], [])  # Not implemented
+    splitted_array = raw_text.split(",")
+    valid = []
+    errors = []
+    for item in splitted_array:
+        try:
+            valid.append(validate_ingredient_name(item))
+        except InvalidIngredientError as e:
+            errors.append(e)
+
+
+    return (valid, errors)
+    #return ([], [])  # Not implemented
     # ============================================================
 
 
@@ -228,7 +254,15 @@ def safe_api_call(func, *args, max_retries: int = 3, **kwargs):
     # - Keep track of the last exception to include in APIError
     #
     # Delete the lines below and write your implementation:
-    return func(*args, **kwargs)  # No retry logic - just calls directly
+    last_exception = None
+    for i in range(max_retries):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            last_exception = e
+            time.sleep(1)
+
+    return last_exception  # No retry logic - just calls directly
     # ============================================================
 
 
